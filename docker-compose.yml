@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  pulsar:
+    image: apachepulsar/pulsar:latest
+    container_name: pulsar
+    command: bin/pulsar standalone
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+    networks:
+      - pulsar-spark-net
+
+  spark:
+    image: bitnami/spark:latest
+    container_name: spark
+    environment:
+      - SPARK_MODE=master
+    ports:
+      - "7077:7077"
+      - "8081:8080"
+    networks:
+      - pulsar-spark-net
+
+  spark-worker:
+    image: bitnami/spark:latest
+    container_name: spark-worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+    depends_on:
+      - spark
+    networks:
+      - pulsar-spark-net
+    
+  pulsar-manager:
+    image: apachepulsar/pulsar-manager:v0.3.0
+    container_name: pulsar-manager
+    ports:
+      - "9527:9527"
+      - "7750:7750"
+    environment:
+      - SPRING_CONFIGURATION_FILE=/pulsar-manager/pulsar-manager/application.properties
+    networks:
+      - pulsar-spark-net
+
+networks:
+  pulsar-spark-net:
+    driver: bridge
