@@ -56,11 +56,10 @@ def process_batch(batch_df, batch_id):
         grouped_df = batch_df.groupBy("source_address").agg(_sum("src2dst_bytes").alias("total_bytes"))
         sorted_df = grouped_df.orderBy(col("total_bytes").desc())
     elif user_selection == "3":
-        sorted_df = batch_df.filter((col("request_type").isNotNull()))
+        sorted_df = batch_df.filter((col("request_type") == "GET") | (col("request_type") == "POST"))
     else:
         print("Geçersiz seçim!")
         return
-
 
     sorted_df.show(truncate=False)
 
