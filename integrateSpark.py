@@ -4,10 +4,10 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 
 def get_user_selection():
     print("Seçiminizi yapın:")
-    print("1 - login_fail_count sayısı 0'dan büyük olanları göster")
-    print("2 - src2dst_bytes verilerini azalan sırada göster")
-    print("3 - request_types verilerini göster")
-    selection = input("Seçiminizi girin: ")
+    print("1 - Show login_fail_count greater than 0")
+    print("2 - Show src2dst_bytes data in descending order")
+    print("3 - Show request_types data")
+    selection = input("Enter your choice: ")
     return selection
 
 spark = SparkSession.builder \
@@ -51,14 +51,15 @@ user_selection = get_user_selection()
 def process_batch(batch_df, batch_id):
     if user_selection == "1":
         filtered_df = batch_df.filter(col("login_fail_count") > 0)
-        sorted_df = filtered_df.orderBy(col("login_fail_count").desc())
+        grouped_df = filtered_df.groupBy("source_address", "destination_address").agg(_sum("login_fail_count").alias("total_login_fail_count"))
+        sorted_df = grouped_df.orderBy(col("total_login_fail_count").desc())
     elif user_selection == "2":
         grouped_df = batch_df.groupBy("source_address").agg(_sum("src2dst_bytes").alias("total_bytes"))
         sorted_df = grouped_df.orderBy(col("total_bytes").desc())
     elif user_selection == "3":
         sorted_df = batch_df.filter((col("request_type") == "GET") | (col("request_type") == "POST"))
     else:
-        print("Geçersiz seçim!")
+        print("Invalid selection!")
         return
 
     sorted_df.show(truncate=False)

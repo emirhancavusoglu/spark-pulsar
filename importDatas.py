@@ -15,10 +15,10 @@ def send_data_to_pulsar(file_path, topic_name):
         for data in data_to_send:
             producer.send(data.encode('utf-8'))
             print(data)
-        print("Veriler başarıyla gönderildi.")
+        print("The data was sent successfully.")
 
     except Exception as e:
-        print(f"Bir hata oluştu: {e}")
+        print(f"An error has occurred: {e}")
 
     finally:
         client.close()
