@@ -5,11 +5,11 @@ The integration allows you to stream data from Pulsar to Spark for real-time pro
 
 ## Prerequisites
 
-- Docker
-- Python 
-- Apache Pulsar
-- Apache Spark
-- Pulsar-Spark-Connector.jar
+- Docker v4.15.0+
+- Python v3.9+
+- Apache Pulsar v3.4.0+
+- Apache Spark v3.5.1+
+- Pulsar-Spark-Connector.jar v2.12-3.4.0.1
 
 ## Installation
 ### Step 1: Set-up docker
